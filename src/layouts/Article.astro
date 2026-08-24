@@ -1,0 +1,54 @@
+---
+import Base from "./Base.astro";
+import type { WikiDoc } from "../lib/content";
+
+interface Props {
+  doc: WikiDoc;
+}
+
+const { doc } = Astro.props;
+
+const isStock = doc.dir === "stocks";
+const isIndustry = doc.dir === "industries";
+const breadcrumbLabel = isStock ? "个股" : isIndustry ? "行业" : null;
+const breadcrumbHref = isStock ? "/stocks/" : isIndustry ? "/industries/" : null;
+
+const metaBits = [
+  doc.assetType && `类型：${doc.assetType}`,
+  doc.trend && `趋势：${doc.trend}`,
+  doc.updatedLine && `最后更新：${doc.updatedLine}`,
+].filter(Boolean);
+---
+
+<Base title={doc.title}>
+  <div class="article-page">
+    <div>
+      <p class="back-nav"><a href="#" data-back>← 返回上一页</a></p>
+      {
+        breadcrumbLabel && (
+          <p class="breadcrumb">
+            <a href={breadcrumbHref}>{breadcrumbLabel}</a> / {doc.title}
+          </p>
+        )
+      }
+      <h1 class="article-title">{doc.title}</h1>
+      {metaBits.length > 0 && <p class="article-updated">{metaBits.join(" · ")}</p>}
+      {doc.highlightHtml && <div class="article-highlight" set:html={doc.highlightHtml} />}
+      <div class="article-body" set:html={doc.html} />
+    </div>
+    {
+      doc.headings.length > 0 && (
+        <aside class="article-toc">
+          <p class="toc-label">本页目录</p>
+          <ul>
+            {doc.headings.map((h) => (
+              <li class={h.depth === 3 ? "depth-3" : ""}>
+                <a href={`#${h.id}`}>{h.text}</a>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )
+    }
+  </div>
+</Base>

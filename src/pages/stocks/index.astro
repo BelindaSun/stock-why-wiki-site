@@ -1,0 +1,97 @@
+---
+import Base from "../../layouts/Base.astro";
+import { CATEGORIES, getDocsInCategory, stripMd } from "../../lib/content";
+
+const meta = CATEGORIES.find((c) => c.key === "stocks")!;
+const docs = getDocsInCategory("stocks");
+
+// The ticker is the part of the title before the em-dash ("NVDA — NVIDIA…").
+function tickerOf(title: string): string {
+  return title.split(/\s+[—-]\s+/)[0].trim();
+}
+function nameOf(title: string): string {
+  const parts = title.split(/\s+[—-]\s+/);
+  return parts.length > 1 ? parts.slice(1).join(" — ").trim() : "";
+}
+---
+
+<Base title={meta.label}>
+  <div class="container">
+    <p class="back-nav"><a href="#" data-back>← 返回上一页</a></p>
+    <p class="breadcrumb"><a href="/">首页</a> / {meta.label}</p>
+    <h1 class="article-title">{meta.icon} {meta.label}</h1>
+    <p class="article-updated">{meta.description} · 共 {docs.length} 只</p>
+  </div>
+
+  <div class="asset-grid">
+    {
+      docs.map((d) => (
+        <a class="asset-card" href={`/${d.slug}`}>
+          <div class="asset-head">
+            <span class="ticker-badge">{tickerOf(d.title)}</span>
+            <span class="asset-name">{nameOf(d.title)}</span>
+          </div>
+          {d.latestEvent && (
+            <p class="asset-move">
+              <span class="asset-date">{d.latestEvent.date}</span>
+              {(() => {
+                const s = stripMd(d.latestEvent!.summary);
+                return s.length > 96 ? s.slice(0, 96) + "…" : s;
+              })()}
+            </p>
+          )}
+        </a>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .asset-grid {
+    max-width: 900px;
+    margin: 20px auto 90px;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 720px) {
+    .asset-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .asset-card {
+    display: block;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    color: var(--text);
+  }
+  .asset-card:hover {
+    background: var(--bg-card-active);
+    text-decoration: none;
+  }
+  .asset-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .asset-name {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  .asset-move {
+    margin: 10px 0 0;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+  .asset-date {
+    font-variant-numeric: tabular-nums;
+    color: var(--accent-strong);
+    margin-right: 8px;
+  }
+</style>

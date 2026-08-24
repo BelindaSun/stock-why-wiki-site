@@ -1,0 +1,269 @@
+---
+import Base from "../layouts/Base.astro";
+import { getIndexEntries, getDocsInCategory } from "../lib/content";
+
+const entries = getIndexEntries();
+const stockCount = getDocsInCategory("stocks").length;
+const industryCount = getDocsInCategory("industries").length;
+
+const doors = [
+  { label: "个股", href: "/stocks/", caption: `${stockCount} 只资产，每只都有上下游图谱 + 涨跌时间线` },
+  { label: "行业", href: "/industries/", caption: `${industryCount} 个主题节点，把个股连成产业链` },
+  { label: "产业链导览", href: "/overview", caption: "从发电到芯片，一张分层总览" },
+  { label: "关系图", href: "/graph/index.html", caption: "可拖动的交互式因果关系图" },
+];
+---
+
+<Base title="首页">
+  <div class="home">
+    <section class="hero-section">
+      <span class="eyebrow">因果地图机器 · 非投资建议</span>
+      <h1>Stock Why<br />涨跌溯源</h1>
+      <p class="hero-body">
+        一个会不断长大的投资知识库。每次看到某只股票/资产涨跌，问一句"为什么"，
+        它就查清真实催化剂、画出它的<strong>上游（谁驱动它）</strong>和
+        <strong>下游（它影响谁）</strong>，并存进这里。问得越多，网织得越密。
+      </p>
+      <blockquote class="hero-quote">
+        回答的不是"会不会涨"，<br />而是"这次涨跌的机制是什么、卡点在哪、钱流去了链条的哪一段"。
+      </blockquote>
+    </section>
+
+    <div class="masthead-rule"></div>
+
+    <section class="entry-section">
+      <span class="eyebrow">怎么进来</span>
+      <div class="entry-grid">
+        {
+          doors.map((d) => (
+            <div class="entry-item">
+              <a class="btn-primary" href={d.href}>
+                {d.label}
+              </a>
+              <p class="entry-caption">{d.caption}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="updates-section">
+      <div class="section-eyebrow-inline">
+        <span class="eyebrow">最新条目</span>
+        <span class="structure-desc">最新在上 · 每条都是一次真实涨跌的溯源</span>
+      </div>
+      <ul class="feed">
+        {
+          entries.map((e) => (
+            <li class="feed-item">
+              <span class="feed-date">{e.date}</span>
+              <a class="feed-body" href={e.href}>
+                <span class="feed-head">
+                  <span class="ticker-badge">{e.ticker}</span>
+                  <span class="feed-name">{e.name}</span>
+                </span>
+                <span class="feed-summary">{e.summary}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      {entries.length === 0 && <p class="structure-desc">（暂无条目——内容仓库更新后会自动出现在这里。）</p>}
+    </section>
+  </div>
+</Base>
+
+<style>
+  .home {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 clamp(24px, 5vw, 72px);
+    font-family: var(--font-serif);
+  }
+
+  .eyebrow {
+    display: block;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--text) 60%, transparent);
+  }
+
+  .hero-section {
+    padding: 80px 0 40px;
+  }
+
+  .hero-section .eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .hero-section h1 {
+    font-weight: 600;
+    font-size: clamp(48px, 6.5vw, 84px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+  }
+
+  .hero-body {
+    font-size: 1.125rem;
+    line-height: 1.65;
+    max-width: 640px;
+    color: color-mix(in srgb, var(--text) 82%, transparent);
+    margin: 0 0 20px;
+  }
+
+  .hero-body strong {
+    color: var(--accent-strong);
+    font-weight: 600;
+  }
+
+  .hero-quote {
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.16rem;
+    line-height: 1.5;
+    max-width: 560px;
+    margin: 0;
+    color: color-mix(in srgb, var(--text) 70%, transparent);
+  }
+
+  .masthead-rule {
+    height: 5px;
+    border-top: 3px solid var(--accent-strong);
+    border-bottom: 1px solid var(--accent-strong);
+  }
+
+  .entry-section,
+  .updates-section {
+    padding: 40px 0;
+  }
+
+  .entry-section .eyebrow {
+    margin-bottom: 20px;
+  }
+
+  .entry-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .entry-item {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    justify-content: center;
+    padding: 14px 28px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1.06rem;
+    font-weight: 600;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    text-decoration: none;
+  }
+
+  .btn-primary:active {
+    background: var(--accent-strong);
+  }
+
+  .entry-caption {
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--text) 60%, transparent);
+    margin: 0;
+  }
+
+  .section-eyebrow-inline {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .section-eyebrow-inline .eyebrow {
+    display: inline;
+  }
+
+  .structure-desc {
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--text) 60%, transparent);
+  }
+
+  .feed {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .feed-item {
+    display: flex;
+    gap: 18px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .feed-date {
+    flex-shrink: 0;
+    width: 90px;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: color-mix(in srgb, var(--text) 55%, transparent);
+    font-variant-numeric: tabular-nums;
+    padding-top: 2px;
+  }
+
+  .feed-body {
+    display: block;
+    color: var(--text);
+  }
+
+  .feed-body:hover {
+    text-decoration: none;
+  }
+
+  .feed-body:hover .feed-name {
+    color: var(--link);
+  }
+
+  .feed-head {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    flex-wrap: wrap;
+  }
+
+  .feed-name {
+    font-weight: 600;
+    font-size: 1.02rem;
+  }
+
+  .feed-summary {
+    display: block;
+    margin-top: 5px;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: color-mix(in srgb, var(--text) 72%, transparent);
+  }
+
+  @media (max-width: 640px) {
+    .feed-item {
+      flex-direction: column;
+      gap: 6px;
+    }
+    .feed-date {
+      width: auto;
+    }
+  }
+</style>

@@ -1,0 +1,16 @@
+---
+import Article from "../layouts/Article.astro";
+import { getAllDocs } from "../lib/content";
+
+export async function getStaticPaths() {
+  const docs = getAllDocs();
+  return docs.map((d) => ({
+    params: { slug: d.slug },
+    props: { doc: d },
+  }));
+}
+
+const { doc } = Astro.props;
+---
+
+<Article doc={doc} />

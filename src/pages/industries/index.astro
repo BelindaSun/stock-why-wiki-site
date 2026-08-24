@@ -1,0 +1,56 @@
+---
+import Base from "../../layouts/Base.astro";
+import { CATEGORIES, getDocsInCategory, stripMd } from "../../lib/content";
+
+const meta = CATEGORIES.find((c) => c.key === "industries")!;
+const docs = getDocsInCategory("industries");
+
+// Title looks like "industry: semiconductors — 半导体"; show the human half.
+function labelOf(title: string): string {
+  const m = title.match(/^industry:\s*[a-z0-9-]+\s*[—-]\s*(.+)$/i);
+  return m ? m[1].trim() : title.replace(/^industry:\s*/i, "");
+}
+---
+
+<Base title={meta.label}>
+  <div class="container">
+    <p class="back-nav"><a href="#" data-back>← 返回上一页</a></p>
+    <p class="breadcrumb"><a href="/">首页</a> / {meta.label}</p>
+    <h1 class="article-title">{meta.icon} {meta.label}</h1>
+    <p class="article-updated">{meta.description} · 共 {docs.length} 个</p>
+  </div>
+
+  <ul class="plain-list">
+    {
+      docs.map((d) => (
+        <li>
+          <a href={`/${d.slug}`} style="font-size:1.08rem; font-weight:600; font-family:var(--font-serif)">
+            {labelOf(d.title)}
+          </a>
+          {d.trend && <span class="ind-trend">{d.trend}</span>}
+          {d.highlight && (
+            <p style="color:var(--text-muted); font-size:0.9rem; margin:6px 0 0;">
+              {(() => {
+                const s = stripMd(d.highlight);
+                return s.length > 120 ? s.slice(0, 120) + "…" : s;
+              })()}
+            </p>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</Base>
+
+<style>
+  .ind-trend {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 0.75rem;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--industry-soft);
+    color: var(--industry);
+    vertical-align: middle;
+  }
+</style>

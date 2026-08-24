@@ -1,0 +1,312 @@
+---
+import "../styles/global.css";
+import Analytics from "@vercel/analytics/astro";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+
+const pageUrl = `https://stock-why-wiki-site.vercel.app${Astro.url.pathname}`;
+const feedbackSubject = `Stock Why 反馈: ${title}`;
+---
+
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · Stock Why 涨跌溯源</title>
+    <link rel="icon" href="/favicon.svg" />
+    <script is:inline>
+      // Apply saved reading preferences before first paint, so there's no
+      // flash of the default theme/font/size on load.
+      (function () {
+        var root = document.documentElement;
+        var theme = localStorage.getItem("wiki-theme");
+        var font = localStorage.getItem("wiki-font");
+        var size = localStorage.getItem("wiki-size");
+        if (theme) root.dataset.theme = theme;
+        if (font) root.dataset.font = font;
+        if (size) root.dataset.size = size;
+      })();
+    </script>
+    <Analytics />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">
+        <span class="brand-badge">SUN</span>
+        <span class="brand-name">Stock Why · 涨跌溯源</span>
+      </a>
+      <nav>
+        <a href="/">首页</a>
+        <a href="/stocks/">个股</a>
+        <a href="/industries/">行业</a>
+        <a href="/overview">产业链导览</a>
+        <a href="/graph/index.html">关系图</a>
+        <a class="muted" href="/index">全部条目</a>
+        <button id="settings-btn" class="settings-btn" type="button" aria-expanded="false" aria-label="阅读设置" title="阅读设置">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+            ></path>
+          </svg>
+        </button>
+      </nav>
+
+      <div id="settings-panel" class="settings-panel" hidden>
+        <div class="settings-group">
+          <div class="settings-label">主题</div>
+          <div class="theme-grid">
+            <button class="theme-card" data-set-theme="default" type="button">
+              <span class="theme-swatch theme-swatch-default" aria-hidden="true"></span>
+              默认米黄
+            </button>
+            <button class="theme-card" data-set-theme="sepia" type="button">
+              <span class="theme-swatch theme-swatch-sepia" aria-hidden="true"></span>
+              纸张米黄
+            </button>
+            <button class="theme-card" data-set-theme="dark" type="button">
+              <span class="theme-swatch theme-swatch-dark" aria-hidden="true"></span>
+              夜间深色
+            </button>
+            <button class="theme-card" data-set-theme="contrast" type="button">
+              <span class="theme-swatch theme-swatch-contrast" aria-hidden="true"></span>
+              高对比
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-label">字体</div>
+          <div class="option-row">
+            <button class="option-btn" data-set-font="">默认</button>
+            <button class="option-btn" data-set-font="serif">衬线</button>
+            <button class="option-btn" data-set-font="sans">无衬线</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-label">字号</div>
+          <div class="option-row">
+            <button class="option-btn" data-set-size="small">小</button>
+            <button class="option-btn" data-set-size="medium">中</button>
+            <button class="option-btn" data-set-size="large">大</button>
+            <button class="option-btn" data-set-size="xlarge">特大</button>
+          </div>
+        </div>
+
+        <button id="settings-reset" class="settings-reset" type="button">恢复默认</button>
+      </div>
+    </header>
+    <slot />
+    <footer class="site-footer">
+      <button type="button" id="feedback-btn" class="feedback-link">反馈 / Feedback</button>
+      <span>stock-why-wiki · 由 Claude 的 stock-why skill 自动维护 · 内容为个人研究记录，非投资建议 · Astro + Vercel</span>
+    </footer>
+
+    <div id="feedback-modal" class="feedback-modal" hidden>
+      <div class="feedback-backdrop" data-feedback-close></div>
+      <div class="feedback-dialog" role="dialog" aria-modal="true" aria-labelledby="feedback-heading">
+        <button type="button" class="feedback-close" data-feedback-close aria-label="关闭">×</button>
+        <h2 id="feedback-heading" class="feedback-heading">反馈 / Feedback</h2>
+        <form id="feedback-form" class="feedback-form">
+          <input type="hidden" name="access_key" value="727ae9b4-ceb1-4e29-9208-dd32df45593d" />
+          <input type="hidden" name="subject" value={feedbackSubject} />
+          <input type="hidden" name="from_name" value="Stock Why 反馈" />
+          <input type="hidden" name="页面" id="feedback-page" value={pageUrl} />
+          <input type="checkbox" name="botcheck" class="feedback-botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <label class="feedback-field">
+            <span>名字（选填）</span>
+            <input type="text" name="名字" autocomplete="name" />
+          </label>
+          <label class="feedback-field">
+            <span>内容</span>
+            <textarea name="内容" rows="4" required placeholder="发现的问题、建议，或者只是想说点什么…"></textarea>
+          </label>
+          <button type="submit" class="feedback-submit">提交</button>
+        </form>
+        <p id="feedback-success" class="feedback-success" hidden>谢谢，已收到 🌿</p>
+        <p id="feedback-error" class="feedback-error" hidden>
+          提交失败了，稍后再试一次，或直接邮件 sunbelinda1108@gmail.com 🙏
+        </p>
+      </div>
+    </div>
+    <script>
+      // "← 返回上一页" links (data-back): go back in history if we got here
+      // from within the site, otherwise fall back to the homepage.
+      document.querySelectorAll("[data-back]").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (document.referrer.startsWith(location.origin) && history.length > 1) {
+            history.back();
+          } else {
+            location.href = "/";
+          }
+        });
+      });
+    </script>
+    <script>
+      // Reading preferences panel: theme / font / size, saved to localStorage
+      // and applied as data-attributes on <html> (read synchronously in
+      // <head> on future loads to avoid a flash of the default styling).
+      const root = document.documentElement;
+      const btn = document.getElementById("settings-btn");
+      const panel = document.getElementById("settings-panel");
+
+      function syncActiveStates() {
+        const theme = root.dataset.theme || "default";
+        const font = root.dataset.font || "";
+        const size = root.dataset.size || "medium";
+        panel.querySelectorAll("[data-set-theme]").forEach((el) => {
+          el.classList.toggle("active", el.dataset.setTheme === theme);
+        });
+        panel.querySelectorAll("[data-set-font]").forEach((el) => {
+          el.classList.toggle("active", el.dataset.setFont === font);
+        });
+        panel.querySelectorAll("[data-set-size]").forEach((el) => {
+          el.classList.toggle("active", el.dataset.setSize === size);
+        });
+      }
+
+      function openPanel() {
+        panel.hidden = false;
+        btn.setAttribute("aria-expanded", "true");
+        syncActiveStates();
+      }
+
+      function closePanel() {
+        panel.hidden = true;
+        btn.setAttribute("aria-expanded", "false");
+      }
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        panel.hidden ? openPanel() : closePanel();
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!panel.hidden && !panel.contains(e.target) && e.target !== btn) closePanel();
+      });
+
+      panel.querySelectorAll("[data-set-theme]").forEach((el) => {
+        el.addEventListener("click", () => {
+          const value = el.dataset.setTheme;
+          if (value === "default") {
+            delete root.dataset.theme;
+            localStorage.removeItem("wiki-theme");
+          } else {
+            root.dataset.theme = value;
+            localStorage.setItem("wiki-theme", value);
+          }
+          syncActiveStates();
+        });
+      });
+
+      panel.querySelectorAll("[data-set-font]").forEach((el) => {
+        el.addEventListener("click", () => {
+          const value = el.dataset.setFont;
+          if (!value) {
+            delete root.dataset.font;
+            localStorage.removeItem("wiki-font");
+          } else {
+            root.dataset.font = value;
+            localStorage.setItem("wiki-font", value);
+          }
+          syncActiveStates();
+        });
+      });
+
+      panel.querySelectorAll("[data-set-size]").forEach((el) => {
+        el.addEventListener("click", () => {
+          const value = el.dataset.setSize;
+          if (value === "medium") {
+            delete root.dataset.size;
+            localStorage.removeItem("wiki-size");
+          } else {
+            root.dataset.size = value;
+            localStorage.setItem("wiki-size", value);
+          }
+          syncActiveStates();
+        });
+      });
+
+      document.getElementById("settings-reset").addEventListener("click", () => {
+        delete root.dataset.theme;
+        delete root.dataset.font;
+        delete root.dataset.size;
+        localStorage.removeItem("wiki-theme");
+        localStorage.removeItem("wiki-font");
+        localStorage.removeItem("wiki-size");
+        syncActiveStates();
+      });
+    </script>
+    <script>
+      // Feedback modal: a small in-page form that submits to Web3Forms via
+      // fetch (no page navigation, reader doesn't enter their email). The
+      // page they're on is sent along so we know which page the note is about.
+      const fbModal = document.getElementById("feedback-modal");
+      const fbForm = document.getElementById("feedback-form");
+      const fbSuccess = document.getElementById("feedback-success");
+      const fbError = document.getElementById("feedback-error");
+      const fbSubmit = fbForm.querySelector(".feedback-submit");
+
+      function openFeedback() {
+        fbSuccess.hidden = true;
+        fbError.hidden = true;
+        fbForm.hidden = false;
+        fbForm.reset();
+        fbModal.hidden = false;
+        const first = fbForm.querySelector('input[name="名字"]');
+        if (first) first.focus();
+      }
+
+      function closeFeedback() {
+        fbModal.hidden = true;
+      }
+
+      document.getElementById("feedback-btn").addEventListener("click", openFeedback);
+      fbModal.querySelectorAll("[data-feedback-close]").forEach((el) => {
+        el.addEventListener("click", closeFeedback);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !fbModal.hidden) closeFeedback();
+      });
+
+      fbForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        fbError.hidden = true;
+        fbSubmit.disabled = true;
+        fbSubmit.textContent = "提交中…";
+        const pageField = document.getElementById("feedback-page");
+        if (pageField) pageField.value = location.href;
+        const data = Object.fromEntries(new FormData(fbForm).entries());
+        try {
+          const res = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+          const result = await res.json();
+          if (result.success) {
+            fbForm.hidden = true;
+            fbSuccess.hidden = false;
+          } else {
+            throw new Error(result.message || "submit failed");
+          }
+        } catch (err) {
+          fbError.hidden = false;
+        } finally {
+          fbSubmit.disabled = false;
+          fbSubmit.textContent = "提交";
+        }
+      });
+    </script>
+  </body>
+</html>

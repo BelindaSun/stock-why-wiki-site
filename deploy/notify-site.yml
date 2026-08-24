@@ -1,0 +1,15 @@
+# Copy this file into the CONTENT repo (BelindaSun/stock-why-wiki) at
+#   .github/workflows/notify-site.yml
+# so every push to main pings the site's Vercel Deploy Hook and triggers a
+# rebuild. See README.md → "自动更新" for the full wiring.
+name: Notify site to rebuild
+on:
+  push:
+    branches: [main]
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -X POST "$DEPLOY_HOOK_URL"
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.SITE_DEPLOY_HOOK }}
