@@ -139,12 +139,54 @@ function rewriteLinks() {
   };
 }
 
+/** Timeline headings start with an ISO date (`## 2026-08-24 — …`). Give those a
+ * clean `id` that is *just the date*, so other pages (e.g. the investment-book
+ * timeline) can deep-link to a specific move as `/stocks/GOOGL#2026-08-24`
+ * instead of having to know the full slugified heading text. Falls through to
+ * null for non-timeline headings. `seen` dedupes a date repeated within one
+ * file (second one becomes `2026-08-24-2`). */
+function dateAnchor(text: string, seen: Set<string>): string | null {
+  const m = text.trim().match(/^(\d{4}-\d{2}-\d{2})\b/);
+  if (!m) return null;
+  let id = m[1];
+  if (seen.has(id)) {
+    let n = 2;
+    while (seen.has(`${id}-${n}`)) n++;
+    id = `${id}-${n}`;
+  }
+  seen.add(id);
+  return id;
+}
+
+/** Flattens a hast element's text content (rehype has no shared toString). */
+function hastText(node: any): string {
+  if (node.type === "text") return node.value || "";
+  if (node.children) return node.children.map(hastText).join("");
+  return "";
+}
+
+/** Runs after rehypeSlug and rewrites timeline date headings to a bare-date id,
+ * keeping the rendered anchors in lockstep with the TOC (see dateAnchor). */
+function rehypeDateAnchors() {
+  return (tree: any) => {
+    const seen = new Set<string>();
+    visit(tree, "element", (node: any) => {
+      if (!/^h[1-6]$/.test(node.tagName)) return;
+      const id = dateAnchor(hastText(node), seen);
+      if (!id) return;
+      node.properties = node.properties || {};
+      node.properties.id = id;
+    });
+  };
+}
+
 function extractHeadings(tree: any): Heading[] {
   const headings: Heading[] = [];
+  const seenDates = new Set<string>();
   visit(tree, "heading", (node: any) => {
     if (node.depth < 2 || node.depth > 3) return;
     const text = mdastToString(node);
-    const id = (node.data && node.data.id) || slugify(text);
+    const id = dateAnchor(text, seenDates) || (node.data && node.data.id) || slugify(text);
     headings.push({ depth: node.depth, text, id });
   });
   return headings;
@@ -165,6 +207,7 @@ const processor = unified()
   .use(rewriteLinks)
   .use(remarkRehype, { allowDangerousHtml: false })
   .use(rehypeSlug)
+  .use(rehypeDateAnchors)
   .use(rehypeStringify);
 
 const inlineProcessor = unified()
