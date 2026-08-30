@@ -29,6 +29,8 @@ function syncGraph() {
   // if present so any in-graph link to it keeps working.
   const alt = path.join(CACHE_DIR, "graph.html");
   if (existsSync(alt)) copyFileSync(alt, path.join(destDir, "graph.html"));
+  const biotech = path.join(CACHE_DIR, "graph-biotech.html");
+  if (existsSync(biotech)) copyFileSync(biotech, path.join(destDir, "biotech.html"));
   console.log("[fetch-content] mirrored interactive graph -> public/graph/");
 }
 

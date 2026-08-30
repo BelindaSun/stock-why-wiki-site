@@ -12,7 +12,7 @@
    - **元信息** = 标题下那行 `_Asset type: …_ · _Last updated: …_`（个股）或 `_Last updated: …_ · _趋势：…_`（行业）
    - **最新异动** = 时间线里第一个 `## YYYY-MM-DD — …` 小标题
    - **互链** `[[TICKER]]` / `[[industry:slug]]` 会在目标文件存在时改写成站内链接，否则显示为纯文字（不会 404）
-   - 只有 `stocks/*.md`、`industries/*.md`、`index.md`、`overview.md` 会变成页面
+   - 只有 `stocks/*.md`、`industries/*.md`、`index.md`、`overview.md`、`healthcare-overview.md` 会变成页面
 3. Astro 用 `src/layouts/Article.astro` 统一套样式渲染
 
 **不需要给内容仓库加任何 front matter 或标记**——所有信息都从文件内容和路径自动推断。
@@ -22,7 +22,8 @@
 - `/` 首页：从 `index.md` 解析出的"最新条目"时间线
 - `/stocks/` 个股列表 · `/stocks/<TICKER>` 单只档案
 - `/industries/` 行业列表 · `/industries/<slug>` 单个主题
-- `/overview` 产业链导览 · `/graph/` 交互式关系图 · `/index` 全部条目
+- `/overview` 科技产业链导览 · `/healthcare-overview` 医药十股导览
+- `/graph/` 科技交互图 · `/graph/biotech.html` 医药交互图 · `/index` 全部条目
 
 ## 本地开发
 
