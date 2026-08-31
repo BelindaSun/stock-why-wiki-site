@@ -6,7 +6,7 @@
 
 ## 怎么工作的
 
-1. `npm run build`（或 `npm run dev`）先跑 `scripts/fetch-content.mjs`，把内容仓库浅克隆到本地 `.content-cache/`（gitignore，不提交），并把自包含的交互式关系图（`index.html`）镜像到 `public/graph/`
+1. `npm run build`（或 `npm run dev`）先跑 `scripts/fetch-content.mjs`，把内容仓库浅克隆到本地 `.content-cache/`（gitignore，不提交），并把交互式关系图及其双语资源镜像到 `public/graph/`
 2. `src/lib/content.ts` 读取 `.content-cache` 里的 Markdown：
    - **标题** = 文件第一个 `# ` 标题
    - **元信息** = 标题下那行 `_Asset type: …_ · _Last updated: …_`（个股）或 `_Last updated: …_ · _趋势：…_`（行业）

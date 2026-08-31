@@ -10,9 +10,8 @@ const REPO_URL = "https://github.com/BelindaSun/stock-why-wiki.git";
 
 const force = process.argv.includes("--force");
 
-// The content repo ships a self-contained interactive graph (index.html —
-// "涨跌溯源图谱", all data embedded, no external fetches beyond Google Fonts).
-// Mirror it into public/graph/ so it lives on this site's own domain at
+// The content repo ships the interactive graph pages plus their shared assets.
+// Mirror them into public/graph/ so they live on this site's own domain at
 // /graph/ and refreshes on every rebuild, instead of pointing readers off to
 // the separate GitHub Pages deployment.
 function syncGraph() {
@@ -31,6 +30,10 @@ function syncGraph() {
   if (existsSync(alt)) copyFileSync(alt, path.join(destDir, "graph.html"));
   const biotech = path.join(CACHE_DIR, "graph-biotech.html");
   if (existsSync(biotech)) copyFileSync(biotech, path.join(destDir, "biotech.html"));
+  for (const asset of ["i18n.js", "i18n-en.json"]) {
+    const assetSrc = path.join(CACHE_DIR, asset);
+    if (existsSync(assetSrc)) copyFileSync(assetSrc, path.join(destDir, asset));
+  }
   console.log("[fetch-content] mirrored interactive graph -> public/graph/");
 }
 
