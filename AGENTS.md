@@ -14,7 +14,9 @@ npm run dev        # fetches content, then starts astro dev
 
 `npm run dev` and `npm run build` both run `scripts/fetch-content.mjs` first,
 which clones/pulls the content repo into `.content-cache/` (gitignored) and
-mirrors the interactive graph (`index.html`) into `public/graph/`.
+mirrors the interactive graphs into `public/graph/` (`index.html`, `graph.html`,
+`graph-biotech.html` → `biotech.html`, `graph-china.html` → `china.html`, plus
+`i18n.js` / `i18n-en.json`).
 
 ## How content is parsed (src/lib/content.ts)
 

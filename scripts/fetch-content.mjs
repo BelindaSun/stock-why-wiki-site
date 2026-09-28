@@ -30,6 +30,8 @@ function syncGraph() {
   if (existsSync(alt)) copyFileSync(alt, path.join(destDir, "graph.html"));
   const biotech = path.join(CACHE_DIR, "graph-biotech.html");
   if (existsSync(biotech)) copyFileSync(biotech, path.join(destDir, "biotech.html"));
+  const china = path.join(CACHE_DIR, "graph-china.html");
+  if (existsSync(china)) copyFileSync(china, path.join(destDir, "china.html"));
   for (const asset of ["i18n.js", "i18n-en.json"]) {
     const assetSrc = path.join(CACHE_DIR, asset);
     if (existsSync(assetSrc)) copyFileSync(assetSrc, path.join(destDir, asset));
