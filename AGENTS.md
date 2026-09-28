@@ -24,8 +24,12 @@ mirrors the interactive graph (`index.html`) into `public/graph/`.
 - Latest move = first `## YYYY-MM-DD — …` timeline heading.
 - Wiki cross-links `[[TICKER]]` / `[[industry:slug]]` become site links when the
   target file exists, plain text otherwise.
-- Only `stocks/*.md`, `industries/*.md`, `index.md`, `overview.md`, and
-  `healthcare-overview.md` become pages.
+- Only `stocks/*.md`, `industries/*.md`, `index.md`, `overview.md`,
+  `healthcare-overview.md`, and `china-overview.md` become pages. A new root
+  overview needs three edits: `ROOT_PAGES`, the nav in `Base.astro`, and a
+  home card in `index.astro`.
+- Stock file names may contain dots (Yahoo tickers such as `688256.SS`,
+  `0700.HK`); these build and serve as normal routes.
 
 No front matter or markers are needed in the content repo — everything is
 inferred from content and path.
