@@ -62,7 +62,7 @@ export const CATEGORIES: CategoryMeta[] = [
 
 // Root-level markdown that IS worth rendering as a page (everything else at the
 // repo root — README, chatgpt-custom-gpt, skill/ — is repo plumbing, skipped).
-const ROOT_PAGES = new Set(["index.md", "overview.md", "healthcare-overview.md"]);
+const ROOT_PAGES = new Set(["index.md", "overview.md", "healthcare-overview.md", "china-overview.md"]);
 
 function slugForFile(repoRelativePath: string): string {
   return repoRelativePath.replace(/\.md$/i, "").replace(/\\/g, "/");
